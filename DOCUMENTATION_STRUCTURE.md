@@ -22,7 +22,7 @@
 - 第32章：体温（U=U，肉体结合）
 - 第33-40章：日常生活、职业冲击、搬家、除夕回望
 
-### 时代卷：时代洪流
+### 回溯卷：时代洪流
 `/docs/timeline/`
 
 **时间线**：2015-2024
@@ -108,7 +108,7 @@ title: "章节标题"
 
 - `content/docs/meta.json` - 根导航
 - `content/docs/part1/meta.json` - 第一卷章节列表
-- `content/docs/timeline/meta.json` - 时代卷章节列表
+- `content/docs/timeline/meta.json` - 回溯卷章节列表
 - `content/docs/part3/meta.json` - 第三卷章节列表
 - 其他各部分的 `meta.json`
 
