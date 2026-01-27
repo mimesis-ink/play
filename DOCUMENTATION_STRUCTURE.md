@@ -108,7 +108,7 @@ title: "章节标题"
 
 - `content/docs/meta.json` - 根导航
 - `content/docs/part1/meta.json` - 第一卷章节列表
-- `content/docs/timeline/meta.json` - 时代卷章节列表
+- `content/docs/timeline/meta.json` - 回溯卷章节列表
 - `content/docs/part3/meta.json` - 第三卷章节列表
 - 其他各部分的 `meta.json`
 
