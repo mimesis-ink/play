@@ -1,18 +1,18 @@
 {
   "title": "回溯卷",
-  "pages": {
-    "chapter-0": "Chapter 0: 回溯卷·序章(陆):2015年夏·上海弄堂里的光",
-    "chapter-1": "Chapter 1: 回溯卷·第一章(陆):象牙塔里的异乡人",
-    "chapter-2": "Chapter 2: 回溯卷·第二章(沈):新婚之夜的虚假和平",
-    "chapter-3": "Chapter 3: 回溯卷·第三章(陆):第一次试错式恋爱",
-    "chapter-4": "Chapter 4: 回溯卷·第四章(沈):无性婚姻的确立",
-    "chapter-5": "Chapter 5: 回溯卷·第五章(陆):海德格尔的召唤",
-    "chapter-6": "Chapter 6: 回溯卷·第六章(沈):深夜的交友软件",
-    "chapter-7": "Chapter 7: 回溯卷·第七章(陆):疫情中的封闭",
-    "chapter-8": "Chapter 8: 回溯卷·第八章(沈):离婚前夜",
-    "chapter-9": "Chapter 9: 回溯卷·第九章(陆):靠近的渐行线",
-    "chapter-10": "Chapter 10: 回溯卷·第十章(沈):系统的重置归零",
-    "chapter-11": "Chapter 11: 回溯卷·第十一章:平行线",
-    "chapter-12": "Chapter 12: 回溯卷·第十二章(沈):濒死之光"
-  }
+  "pages": [
+    "chapter-0",
+    "chapter-1",
+    "chapter-2",
+    "chapter-3",
+    "chapter-4",
+    "chapter-5",
+    "chapter-6",
+    "chapter-7",
+    "chapter-8",
+    "chapter-9",
+    "chapter-10",
+    "chapter-11",
+    "chapter-12"
+  ]
 }

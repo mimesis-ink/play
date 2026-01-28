@@ -1,7 +1,7 @@
 {
   "title": "附录",
-  "pages": {
-    "characters": "角色设定",
-    "timeline-reference": "时间线"
-  }
+  "pages": [
+    "characters",
+    "timeline-reference"
+  ]
 }
