@@ -78,15 +78,15 @@ We identified **11 total issues**:
 ---
 
 ### 🟡 Issue #4: Lin Xiao's Sudden Appearance
-### 🟡 问题 #4：林骁突然出现
+### 🟡 问题 #4：吴炜突然出现
 
 **Problem**: Lin Xiao appears in Chapter 10 with zero prior introduction or foreshadowing.
 
-**问题**：林骁在第10章突然出现，之前零铺垫。
+**问题**：吴炜在第10章突然出现，之前零铺垫。
 
 **Fix Suggested / 建议修复**: Add 1-2 scenes in Ch8-9 introducing the bar and Lin Xiao.
 
-**修复方案**：在第8-9章增加1-2个场景，引入酒吧和林骁。
+**修复方案**：在第8-9章增加1-2个场景，引入酒吧和吴炜。
 
 ---
 
@@ -199,7 +199,7 @@ We identified **11 total issues**:
 
 ❌ **结构问题**：第2-3章重复是重大缺陷  
 ⚠️ **时间压缩**：5个月情感弧线显得仓促  
-⚠️ **铺垫缺失**：林骁、工作状态需要铺垫  
+⚠️ **铺垫缺失**：吴炜、工作状态需要铺垫  
 ⚠️ **符号未闭环**：U盘缺乏闭合
 
 ---
@@ -222,7 +222,7 @@ We identified **11 total issues**:
 5. Add U-disk closure scene
 
 ### 第二阶段：建议修复（2-3天）
-3. 在第8-9章增加林骁铺垫
+3. 在第8-9章增加吴炜铺垫
 4. 在第6-7章增加陆以辰心理过渡
 5. 增加U盘闭环场景
 
