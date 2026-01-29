@@ -4,6 +4,7 @@ package-lock.json
 
 # generated content
 .source
+analysis-data.json
 
 # test & build
 /coverage
