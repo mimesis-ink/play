@@ -40,7 +40,7 @@ function readArticlesFromDirectory(dir: string, dirType: 'mainline' | 'timeline'
   const articles: Article[] = [];
   
   if (!fs.existsSync(dir)) {
-    console.warn(`Directory ${dir} does not exist`);
+    console.warn(`Directory ${dir} does not exist. Expected directory structure: content/docs/${dirType}/`);
     return articles;
   }
 
@@ -61,13 +61,19 @@ function readArticlesFromDirectory(dir: string, dirType: 'mainline' | 'timeline'
     const chapterNumber = chapterMatch ? parseInt(chapterMatch[1], 10) : 0;
     
     // Count words (approximation for Chinese text)
-    const textContent = content.replace(/---[\s\S]*?---/, '').trim();
+    // Remove frontmatter, markdown syntax, and excessive whitespace for better accuracy
+    const textContent = content
+      .replace(/---[\s\S]*?---/, '') // Remove frontmatter
+      .replace(/```[\s\S]*?```/g, '') // Remove code blocks
+      .replace(/[#*`\[\]()]/g, '') // Remove markdown syntax
+      .replace(/\s+/g, '') // Remove whitespace
+      .trim();
     const wordCount = textContent.length;
     
     articles.push({
       filename: file,
       title,
-      content: textContent,
+      content, // Store original content for link extraction
       wordCount,
       directory: dirType,
       chapterNumber
@@ -144,15 +150,48 @@ function extractCrossReferences(articles: Article[]): Array<{ from: string; to: 
   const references: Array<{ from: string; to: string }> = [];
   
   for (const article of articles) {
-    // Look for markdown links [text](/docs/...)
-    const linkPattern = /\[([^\]]+)\]\(\/docs\/(mainline|timeline)\/([^)]+)\)/g;
-    let match;
+    // Look for markdown links manually to handle nested parentheses
+    const content = article.content;
+    let i = 0;
     
-    while ((match = linkPattern.exec(article.content)) !== null) {
-      references.push({
-        from: article.filename,
-        to: `${match[2]}/${match[3]}`
-      });
+    while (i < content.length) {
+      // Find start of markdown link
+      const linkStart = content.indexOf('[', i);
+      if (linkStart === -1) break;
+      
+      // Find end of link text
+      const linkTextEnd = content.indexOf('](', linkStart);
+      if (linkTextEnd === -1) break;
+      
+      // Check if it's a /docs/ link
+      const urlStart = linkTextEnd + 2;
+      if (!content.substring(urlStart).startsWith('/docs/')) {
+        i = linkTextEnd + 1;
+        continue;
+      }
+      
+      // Find the matching closing parenthesis
+      let depth = 1;
+      let urlEnd = urlStart;
+      while (urlEnd < content.length && depth > 0) {
+        if (content[urlEnd] === '(') depth++;
+        else if (content[urlEnd] === ')') depth--;
+        if (depth > 0) urlEnd++;
+      }
+      
+      if (depth === 0) {
+        const url = content.substring(urlStart, urlEnd);
+        // Parse /docs/(mainline|timeline)/filename
+        const match = url.match(/^\/docs\/(mainline|timeline)\/(.+)$/);
+        if (match) {
+          references.push({
+            from: article.filename,
+            to: `${match[1]}/${match[2]}`
+          });
+        }
+      }
+      
+      i = urlEnd + 1;
     }
   }
   
@@ -181,13 +220,16 @@ function analyzeArticles(): AnalysisResult {
   const crossReferences = extractCrossReferences(allArticles);
   
   const totalWordCount = allArticles.reduce((sum, article) => sum + article.wordCount, 0);
+  const averageWordCount = allArticles.length > 0 
+    ? Math.round(totalWordCount / allArticles.length) 
+    : 0;
   
   return {
     totalArticles: allArticles.length,
     mainlineArticles: mainlineArticles.length,
     timelineArticles: timelineArticles.length,
     totalWordCount,
-    averageWordCount: Math.round(totalWordCount / allArticles.length),
+    averageWordCount,
     articles: allArticles,
     themes,
     characters,
@@ -305,26 +347,36 @@ function main() {
   // Output to console
   console.log(report);
   
-  // Save to file
-  const reportPath = path.join(process.cwd(), 'ARTICLE_ANALYSIS.md');
-  fs.writeFileSync(reportPath, report, 'utf-8');
-  console.log(`\n报告已保存到: ${reportPath}`);
+  // Save to file with error handling
+  try {
+    const reportPath = path.join(process.cwd(), 'ARTICLE_ANALYSIS.md');
+    fs.writeFileSync(reportPath, report, 'utf-8');
+    console.log(`\n报告已保存到: ${reportPath}`);
+  } catch (error) {
+    console.error('Error writing report file:', error instanceof Error ? error.message : String(error));
+    process.exit(1);
+  }
   
-  // Also save detailed JSON data
-  const dataPath = path.join(process.cwd(), 'analysis-data.json');
-  fs.writeFileSync(dataPath, JSON.stringify({
-    ...analysis,
-    themes: Array.from(analysis.themes.entries()),
-    characters: Array.from(analysis.characters.entries()),
-    articles: analysis.articles.map(a => ({
-      filename: a.filename,
-      title: a.title,
-      wordCount: a.wordCount,
-      directory: a.directory,
-      chapterNumber: a.chapterNumber
-    }))
-  }, null, 2), 'utf-8');
-  console.log(`详细数据已保存到: ${dataPath}\n`);
+  // Also save detailed JSON data with error handling
+  try {
+    const dataPath = path.join(process.cwd(), 'analysis-data.json');
+    fs.writeFileSync(dataPath, JSON.stringify({
+      ...analysis,
+      themes: Array.from(analysis.themes.entries()),
+      characters: Array.from(analysis.characters.entries()),
+      articles: analysis.articles.map(a => ({
+        filename: a.filename,
+        title: a.title,
+        wordCount: a.wordCount,
+        directory: a.directory,
+        chapterNumber: a.chapterNumber
+      }))
+    }, null, 2), 'utf-8');
+    console.log(`详细数据已保存到: ${dataPath}\n`);
+  } catch (error) {
+    console.error('Error writing data file:', error instanceof Error ? error.message : String(error));
+    process.exit(1);
+  }
   
   console.log('=== 分析完成 ===');
 }
