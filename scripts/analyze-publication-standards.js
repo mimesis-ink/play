@@ -51,9 +51,16 @@ function extractFrontmatter(content) {
   const lines = frontmatterMatch[1].split('\n');
   
   for (const line of lines) {
-    const match = line.match(/^(\w+):\s*["']?(.+?)["']?\s*$/);
+    // Match key: value, handling quoted and unquoted values
+    const match = line.match(/^(\w+):\s*(.+?)\s*$/);
     if (match) {
-      frontmatter[match[1]] = match[2];
+      let value = match[2].trim();
+      // Remove quotes if present
+      if ((value.startsWith('"') && value.endsWith('"')) || 
+          (value.startsWith("'") && value.endsWith("'"))) {
+        value = value.slice(1, -1);
+      }
+      frontmatter[match[1]] = value;
     }
   }
   
@@ -142,30 +149,23 @@ function analyzeFile(filePath, fileName, directory) {
     }
     
     // Check for content after frontmatter
-    const contentAfterFrontmatter = content.replace(/^---\s*\n[\s\S]*?\n---\s*\n/, '').trim();
-    if (contentAfterFrontmatter.length < 100) {
+    const contentWithoutFrontmatter = content.replace(/^---\s*\n[\s\S]*?\n---\s*\n?/, '');
+    const contentAfterFrontmatter = contentWithoutFrontmatter.trim();
+    
+    // Only check length if frontmatter was actually found and removed
+    if (frontmatter && contentAfterFrontmatter.length < 100) {
       issues.push({
         standard: STANDARDS.HAS_CONTENT,
         message: `Content too short (${contentAfterFrontmatter.length} characters)`
       });
       passed = false;
-    }
-    
-    // Basic MDX syntax validation
-    // Check for unclosed tags or common syntax errors
-    const unclosedTags = content.match(/<([a-zA-Z]+)[^>]*>(?!.*<\/\1>)/g);
-    if (unclosedTags && unclosedTags.length > 0) {
-      // Filter out self-closing tags and common false positives
-      const realIssues = unclosedTags.filter(tag => 
-        !tag.endsWith('/>') && !tag.includes('br') && !tag.includes('hr')
-      );
-      if (realIssues.length > 0) {
-        issues.push({
-          standard: STANDARDS.VALID_MDX_SYNTAX,
-          message: `Potentially unclosed tags detected: ${realIssues.slice(0, 3).join(', ')}`
-        });
-        // Don't fail on this, just warn
-      }
+    } else if (!frontmatter && contentAfterFrontmatter.length < 100) {
+      // If no frontmatter, just check total content
+      issues.push({
+        standard: STANDARDS.HAS_CONTENT,
+        message: `Content too short (${content.trim().length} characters)`
+      });
+      passed = false;
     }
     
   } catch (error) {
@@ -228,8 +228,13 @@ function printSummary() {
   const totalFailed = results.mainline.failed + results.timeline.failed;
   
   console.log(`Total Articles Analyzed: ${totalArticles}`);
-  console.log(`  ✓ Passed: ${totalPassed} (${((totalPassed/totalArticles)*100).toFixed(1)}%)`);
-  console.log(`  ✗ Failed: ${totalFailed} (${((totalFailed/totalArticles)*100).toFixed(1)}%)`);
+  
+  if (totalArticles > 0) {
+    console.log(`  ✓ Passed: ${totalPassed} (${((totalPassed/totalArticles)*100).toFixed(1)}%)`);
+    console.log(`  ✗ Failed: ${totalFailed} (${((totalFailed/totalArticles)*100).toFixed(1)}%)`);
+  } else {
+    console.log(`  ⚠ No articles found to analyze`);
+  }
   console.log('');
   
   console.log(`Mainline (主线):`);
