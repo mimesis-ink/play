@@ -14,6 +14,16 @@ yarn dev
 
 Open http://localhost:3000 with your browser to see the result.
 
+## Publication Standards Check
+
+Check if all articles in mainline and timeline meet publication standards:
+
+```bash
+npm run analyze:publication
+```
+
+See [PUBLICATION_STANDARDS.md](./PUBLICATION_STANDARDS.md) for details.
+
 ## Explore
 
 In the project, you can see:
