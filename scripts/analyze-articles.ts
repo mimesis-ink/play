@@ -50,7 +50,9 @@ function readArticlesFromDirectory(dir: string, dirType: 'mainline' | 'timeline'
     if (!file.endsWith('.mdx')) continue;
     
     const filePath = path.join(dir, file);
-    const content = fs.readFileSync(filePath, 'utf-8');
+    
+    try {
+      const content = fs.readFileSync(filePath, 'utf-8');
     
     // Extract title from frontmatter
     const titleMatch = content.match(/title:\s*"([^"]+)"/);
@@ -60,12 +62,12 @@ function readArticlesFromDirectory(dir: string, dirType: 'mainline' | 'timeline'
     const chapterMatch = file.match(/(\d+)-/);
     const chapterNumber = chapterMatch ? parseInt(chapterMatch[1], 10) : 0;
     
-    // Count words (approximation for Chinese text)
-    // Remove frontmatter, markdown syntax, and excessive whitespace for better accuracy
+    // Count characters (for Chinese text, character count is the standard metric)
+    // Remove frontmatter, markdown syntax, and whitespace for better accuracy
     const textContent = content
       .replace(/---[\s\S]*?---/, '') // Remove frontmatter
       .replace(/```[\s\S]*?```/g, '') // Remove code blocks
-      .replace(/[#*`\[\]()]/g, '') // Remove markdown syntax
+      .replace(/[#*`\[\]]/g, '') // Remove markdown syntax (preserve parentheses as they're part of content)
       .replace(/\s+/g, '') // Remove whitespace
       .trim();
     const wordCount = textContent.length;
@@ -78,6 +80,10 @@ function readArticlesFromDirectory(dir: string, dirType: 'mainline' | 'timeline'
       directory: dirType,
       chapterNumber
     });
+    } catch (error) {
+      console.warn(`Failed to read file ${filePath}:`, error instanceof Error ? error.message : String(error));
+      continue;
+    }
   }
   
   return articles.sort((a, b) => a.chapterNumber - b.chapterNumber);
@@ -90,26 +96,26 @@ function extractThemes(articles: Article[]): Map<string, number> {
   const themes = new Map<string, number>();
   
   const themeKeywords = [
-    { keyword: '孤独', theme: '孤独与疏离' },
-    { keyword: '代码', theme: '技术与编程' },
-    { keyword: '爱', theme: '爱情' },
-    { keyword: '理解', theme: '理解与沟通' },
-    { keyword: '哲学', theme: '哲学思考' },
-    { keyword: '海德格尔', theme: '存在主义' },
-    { keyword: '递归', theme: '自我反思' },
-    { keyword: '崩溃', theme: '心理危机' },
-    { keyword: '系统', theme: '系统化思维' },
-    { keyword: '连接', theme: '人际连接' },
-    { keyword: '婚姻', theme: '婚姻关系' },
-    { keyword: '上海', theme: '城市背景' },
-    { keyword: '创业', theme: '创业历程' },
-    { keyword: '自闭', theme: '神经多样性' },
-    { keyword: 'ASD', theme: '神经多样性' }
+    { keyword: '孤独', theme: '孤独与疏离', regex: /孤独/g },
+    { keyword: '代码', theme: '技术与编程', regex: /代码/g },
+    { keyword: '爱', theme: '爱情', regex: /爱/g },
+    { keyword: '理解', theme: '理解与沟通', regex: /理解/g },
+    { keyword: '哲学', theme: '哲学思考', regex: /哲学/g },
+    { keyword: '海德格尔', theme: '存在主义', regex: /海德格尔/g },
+    { keyword: '递归', theme: '自我反思', regex: /递归/g },
+    { keyword: '崩溃', theme: '心理危机', regex: /崩溃/g },
+    { keyword: '系统', theme: '系统化思维', regex: /系统/g },
+    { keyword: '连接', theme: '人际连接', regex: /连接/g },
+    { keyword: '婚姻', theme: '婚姻关系', regex: /婚姻/g },
+    { keyword: '上海', theme: '城市背景', regex: /上海/g },
+    { keyword: '创业', theme: '创业历程', regex: /创业/g },
+    { keyword: '自闭', theme: '神经多样性', regex: /自闭/g },
+    { keyword: 'ASD', theme: '神经多样性', regex: /ASD/g }
   ];
   
   for (const article of articles) {
-    for (const { keyword, theme } of themeKeywords) {
-      const count = (article.content.match(new RegExp(keyword, 'g')) || []).length;
+    for (const { theme, regex } of themeKeywords) {
+      const count = (article.content.match(regex) || []).length;
       if (count > 0) {
         themes.set(theme, (themes.get(theme) || 0) + count);
       }
@@ -126,14 +132,14 @@ function extractCharacters(articles: Article[]): Map<string, number> {
   const characters = new Map<string, number>();
   
   const characterNames = [
-    '陆以辰',
-    '沈柏寒',
-    '海德格尔',
+    { name: '陆以辰', regex: /陆以辰/g },
+    { name: '沈柏寒', regex: /沈柏寒/g },
+    { name: '海德格尔', regex: /海德格尔/g },
   ];
   
   for (const article of articles) {
-    for (const name of characterNames) {
-      const count = (article.content.match(new RegExp(name, 'g')) || []).length;
+    for (const { name, regex } of characterNames) {
+      const count = (article.content.match(regex) || []).length;
       if (count > 0) {
         characters.set(name, (characters.get(name) || 0) + count);
       }
