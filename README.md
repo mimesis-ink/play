@@ -33,6 +33,27 @@ A `source.config.ts` config file has been included, you can customise different 
 
 Read the [Introduction](https://fumadocs.dev/docs/mdx) for further details.
 
+## Claude AI Settings Collection
+
+This project includes a comprehensive settings collection optimized for Claude AI to efficiently read and understand the novel content.
+
+### API Endpoints
+
+- **`/llms-settings.txt`** - Complete settings collection (world-building, characters, plot summary, timeline)
+- **`/llms-full.txt`** - All chapter contents
+- **`/llms.mdx/docs/[[...slug]]`** - Individual chapter access
+
+### Settings Documents
+
+Located in `/content/docs/appendix/`:
+
+- **`settings.mdx`** - World-building and character settings
+- **`plot-summary.mdx`** - Complete plot summary with chapter guide
+- **`characters.mdx`** - Character psychology analysis
+- **`timeline-reference.mdx`** - Complete timeline reference
+
+For detailed usage instructions, see [CLAUDE_SETTINGS_README.md](./CLAUDE_SETTINGS_README.md).
+
 ## Learn More
 
 To learn more about Next.js and Fumadocs, take a look at the following
