@@ -43,6 +43,22 @@ A `source.config.ts` config file has been included, you can customise different 
 
 Read the [Introduction](https://fumadocs.dev/docs/mdx) for further details.
 
+## Content Analysis
+
+This project includes a content analysis script that reads all articles from the mainline and timeline directories and generates comprehensive evaluation reports.
+
+To run the analysis:
+
+```bash
+npx tsx scripts/analyze-articles.ts
+```
+
+This will generate:
+- `ARTICLE_ANALYSIS.md` - A detailed report with statistics, themes, character analysis, and evaluation
+- `analysis-data.json` - Raw data in JSON format
+
+See [scripts/README.md](scripts/README.md) for more information about available scripts.
+
 ## Learn More
 
 To learn more about Next.js and Fumadocs, take a look at the following
